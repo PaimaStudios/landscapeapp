@@ -1,5 +1,5 @@
 {
-  "name": "interactive-landscape",
+  "name": "landscapeapp",
   "version": "1.0.657",
   "description": "Visualization tool for building interactive landscapes",
   "engines": {
@@ -92,5 +92,8 @@
     "type": "git",
     "url": "https://github.com/cncf/landscapeapp"
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.2.1",
+  "devDependencies": {
+    "lodash": "4.17.21"
+  }
 }
