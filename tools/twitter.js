@@ -88,34 +88,36 @@ module.exports.fetchTwitterEntries =  async function({cache, preferCache, crunch
       reporter.write('.');
       return cachedEntry;
     }
-    debug(`Fetching data for ${item.twitter}`);
-    try {
-      var url = item.twitter;
-      const date = await readDate(url);
-      if (date) {
-        reporter.write(cacheMiss("*"));
-        return {
-          latest_tweet_date: date,
-          url: url
-        };
-      } else {
-        reporter.write(fatal("F"));
-        fatalErrors.push(`Empty twitter for ${item.name}: ${url}`);
-        return {
-          latest_tweet_date: date,
-          url: url
-        };
-      }
-    } catch(ex) {
-      debug(`Cannot fetch twitter at ${url} ${ex.message}`);
-      if (cachedEntry) {
-        reporter.write(error("E"));
-        errors.push(`Using cached entry, because ${item.name} has issues with twitter: ${url}, ${(ex.message || ex).substring(0, 100)}`);
-        return cachedEntry;
-      } else {
-        reporter.write(fatal("F"));
-        fatalErrors.push(`No cached entry, and ${item.name} has issues with twitter: ${url}, ${(ex.message || ex).substring(0, 100)}`);
-        return null;
+    if (process.env.TWITTER_KEYS != null) {
+      debug(`Fetching data for ${item.twitter}`);
+      try {
+        var url = item.twitter;
+        const date = await readDate(url);
+        if (date) {
+          reporter.write(cacheMiss("*"));
+          return {
+            latest_tweet_date: date,
+            url: url
+          };
+        } else {
+          reporter.write(fatal("F"));
+          fatalErrors.push(`Empty twitter for ${item.name}: ${url}`);
+          return {
+            latest_tweet_date: date,
+            url: url
+          };
+        }
+      } catch(ex) {
+        debug(`Cannot fetch twitter at ${url} ${ex.message}`);
+        if (cachedEntry) {
+          reporter.write(error("E"));
+          errors.push(`Using cached entry, because ${item.name} has issues with twitter: ${url}, ${(ex.message || ex).substring(0, 100)}`);
+          return cachedEntry;
+        } else {
+          reporter.write(fatal("F"));
+          fatalErrors.push(`No cached entry, and ${item.name} has issues with twitter: ${url}, ${(ex.message || ex).substring(0, 100)}`);
+          return null;
+        }
       }
     }
   }, {concurrency: 5});
