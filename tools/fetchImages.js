@@ -137,8 +137,15 @@ module.exports.fetchImageEntries =  async function({cache, preferCache}) {
           // timeout: 30 * 1000
         // });
       }
-      const croppedSvgResult = await retry(() => autoCropSvg(response, {title: `${item.name} logo`}), 2, 1000);
-      const croppedSvg = croppedSvgResult.result;
+
+
+      const croppedSvg = await (async () => {
+        // do not crop if it's an embedded image in an svg
+        if (response.indexOf('base64') >= 0) {
+          return response;
+        }
+        return (await retry(() => autoCropSvg(response, {title: `${item.name} logo`}), 2, 1000)).result;
+      })();
       require('fs').writeFileSync(path.resolve(projectPath, `cached_logos/${fileName}`), croppedSvg);
       reporter.write(cacheMiss('*'));
       return {
